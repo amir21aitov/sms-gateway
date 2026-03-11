@@ -1,0 +1,765 @@
+{
+	"info": {
+		"name": "SMS Gateway API",
+		"description": "Коллекция для SMS Gateway API.\n\nПеред использованием установите переменные коллекции:\n- `base_url` — адрес сервера (по умолчанию http://localhost:8000)\n- `admin_token` — токен для управления проектами (из .env ADMIN_TOKEN)\n- `api_key` — API ключ проекта (получается при создании проекта через POST /api/projects)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "sms-gateway-admin-secret-token",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "YOUR_API_KEY_HERE",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Projects",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "List projects",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Получение списка всех проектов с пагинацией."
+					},
+					"response": []
+				},
+				{
+					"name": "List projects (with pagination)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/projects?per_page=5&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "5"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Список проектов с пагинацией."
+					},
+					"response": []
+				},
+				{
+					"name": "Create project (Fake provider)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.api_key) {",
+									"    pm.collectionVariables.set('api_key', jsonData.data.api_key);",
+									"    console.log('api_key saved: ' + jsonData.data.api_key);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Project\",\n    \"description\": \"Development project using fake SMS provider\",\n    \"provider\": \"fake\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Создание проекта с Fake-провайдером. После выполнения api_key автоматически сохраняется в переменную коллекции."
+					},
+					"response": []
+				},
+				{
+					"name": "Create project (Eskiz provider)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"E-commerce\",\n    \"description\": \"E-commerce project using Eskiz.uz\",\n    \"provider\": \"eskiz\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Создание проекта с Eskiz-провайдером."
+					},
+					"response": []
+				},
+				{
+					"name": "Create project (Playmobile provider)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"HR система\",\n    \"description\": \"HR system using Playmobile\",\n    \"provider\": \"playmobile\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Создание проекта с Playmobile-провайдером."
+					},
+					"response": []
+				},
+				{
+					"name": "Update project (change provider)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"provider\": \"twilio\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "1"]
+						},
+						"description": "Изменение провайдера проекта. Замените 1 на ID нужного проекта."
+					},
+					"response": []
+				},
+				{
+					"name": "Update project (change name + description)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Project Name\",\n    \"description\": \"New description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "1"]
+						},
+						"description": "Обновление названия и описания проекта."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete project (soft delete)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/projects/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "1"]
+						},
+						"description": "Мягкое удаление проекта. Проект не удаляется из БД, а помечается как удалённый (deleted_at). После удаления: api_key проекта перестаёт работать, проект не отображается в списке."
+					},
+					"response": []
+				}
+			],
+			"description": "Управление проектами: создание, список, обновление."
+		},
+		{
+			"name": "SMS",
+			"item": [
+				{
+					"name": "Send SMS (single phone)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"api_key\": \"{{api_key}}\",\n    \"phones\": [\"+998901234567\"],\n    \"message\": \"Hello from SMS Gateway!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sms/send",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "send"]
+						},
+						"description": "Отправка SMS на один номер телефона."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMS (multiple phones)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"api_key\": \"{{api_key}}\",\n    \"phones\": [\n        \"+998901234567\",\n        \"+998911234567\",\n        \"+998931234567\"\n    ],\n    \"message\": \"Bulk SMS from Gateway!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sms/send",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "send"]
+						},
+						"description": "Массовая отправка SMS на несколько номеров."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMS (via X-Api-Key header)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phones\": [\"+998901234567\"],\n    \"message\": \"SMS with header auth!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sms/send",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "send"]
+						},
+						"description": "Отправка SMS с передачей API ключа через заголовок X-Api-Key вместо тела запроса."
+					},
+					"response": []
+				},
+				{
+					"name": "History (no filters)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sms/history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "history"]
+						},
+						"description": "Получение истории SMS без фильтров (пагинация по умолчанию)."
+					},
+					"response": []
+				},
+				{
+					"name": "History (filter by status)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sms/history?status=sent",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "history"],
+							"query": [
+								{
+									"key": "status",
+									"value": "sent",
+									"description": "pending | sent | delivered | failed"
+								}
+							]
+						},
+						"description": "Фильтрация истории по статусу SMS."
+					},
+					"response": []
+				},
+				{
+					"name": "History (filter by phone)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sms/history?phone=%2B998901234567",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "history"],
+							"query": [
+								{
+									"key": "phone",
+									"value": "%2B998901234567",
+									"description": "Format: +998XXXXXXXXX (URL-encoded)"
+								}
+							]
+						},
+						"description": "Фильтрация истории по номеру телефона."
+					},
+					"response": []
+				},
+				{
+					"name": "History (filter by date range)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sms/history?date_from=2024-01-01&date_to=2026-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "history"],
+							"query": [
+								{
+									"key": "date_from",
+									"value": "2024-01-01",
+									"description": "Format: Y-m-d"
+								},
+								{
+									"key": "date_to",
+									"value": "2026-12-31",
+									"description": "Format: Y-m-d"
+								}
+							]
+						},
+						"description": "Фильтрация истории по диапазону дат."
+					},
+					"response": []
+				},
+				{
+					"name": "History (all filters + pagination)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sms/history?status=pending&phone=%2B998901234567&date_from=2024-01-01&date_to=2026-12-31&per_page=10&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "history"],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "pending | sent | delivered | failed"
+								},
+								{
+									"key": "phone",
+									"value": "%2B998901234567",
+									"description": "Format: +998XXXXXXXXX"
+								},
+								{
+									"key": "date_from",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "date_to",
+									"value": "2026-12-31"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "1-100, default 15"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Получение истории со всеми фильтрами и пагинацией."
+					},
+					"response": []
+				}
+			],
+			"description": "Эндпоинты для отправки SMS и просмотра истории."
+		},
+		{
+			"name": "Validation Errors",
+			"item": [
+				{
+					"name": "Create project (empty body)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Ожидаемый результат: 422 — name и provider обязательны."
+					},
+					"response": []
+				},
+				{
+					"name": "Create project (invalid provider)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test\",\n    \"provider\": \"invalid_provider\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Ожидаемый результат: 422 — невалидный провайдер."
+					},
+					"response": []
+				},
+				{
+					"name": "Update project (not found)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"provider\": \"fake\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/projects/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "99999"]
+						},
+						"description": "Ожидаемый результат: 404 — проект не найден."
+					},
+					"response": []
+				},
+				{
+					"name": "Projects (no admin token)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Ожидаемый результат: 401 — Access token is required."
+					},
+					"response": []
+				},
+				{
+					"name": "Projects (invalid admin token)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid-token"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/projects",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"]
+						},
+						"description": "Ожидаемый результат: 401 — Invalid access token."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete project (not found)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/projects/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "99999"]
+						},
+						"description": "Ожидаемый результат: 404 — проект не найден."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMS (no api_key)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phones\": [\"+998901234567\"],\n    \"message\": \"Test\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sms/send",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "send"]
+						},
+						"description": "Ожидаемый результат: 401 Unauthorized."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMS (invalid phone)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"api_key\": \"{{api_key}}\",\n    \"phones\": [\"12345\", \"not-a-phone\"],\n    \"message\": \"Test\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sms/send",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "send"]
+						},
+						"description": "Ожидаемый результат: 422 с ошибкой валидации формата телефона."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMS (invalid api_key)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"api_key\": \"invalid-key-12345\",\n    \"phones\": [\"+998901234567\"],\n    \"message\": \"Test\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sms/send",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sms", "send"]
+						},
+						"description": "Ожидаемый результат: 401 Invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Запросы для проверки обработки ошибок и валидации."
+		}
+	]
+}
